@@ -3,7 +3,7 @@ import Bullet from './Bullet.js';
 export default class Player {
   constructor(initialX, initialY, container) {
     this.x = initialX;
-    this.y = initialY;
+    this.y = container.offsetHeight-initialY;
     this.speed = 5;
     this.width = 50;
     this.height = 25;
@@ -14,6 +14,7 @@ export default class Player {
   }
 
   playerCreate=()=>{
+
     this.element = document.createElement('div');
     this.element.style.position = 'absolute';
     this.element.style.width = `${this.width}px`;
@@ -21,21 +22,29 @@ export default class Player {
     this.element.style.backgroundColor = 'blue';
     this.element.style.left = `${this.x}px`;
     this.element.style.top = `${this.y}px`;
-    this.bullet = null;
+      this.bullet = null;
 
     this.container.appendChild(this.element);
 
     this.handleKeyPress = this.handleKeyPress.bind(this);
     document.addEventListener('keydown', this.handleKeyPress);
+  
+    this.maxLeftPosition=0;
+    this.maxRightPosition=this.container.offsetWidth-this.width;
+  
   }
 
   moveLeft() {
     this.x -= this.speed;
+    if(this.x<=this.maxLeftPosition) this.x=this.maxLeftPosition
     this.updatePosition();
   }
 
   moveRight() {
+
     this.x += this.speed;
+    if(this.x>=this.maxRightPosition) this.x=this.maxRightPosition
+
     this.updatePosition();
   }
 
@@ -73,7 +82,7 @@ export default class Player {
 
   updateGame = () => {
     this.updatePosition();
-    this.handleBulletCollision();
+    // this.handleBulletCollision();
 
     this.updatePosition();
     if (this.bullet) {
