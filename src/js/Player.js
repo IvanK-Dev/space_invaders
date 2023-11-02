@@ -16,6 +16,8 @@ export default class Player {
   playerCreate=()=>{
 
     this.element = document.createElement('div');
+    this.element.id='player'
+
     this.element.style.position = 'absolute';
     this.element.style.width = `${this.width}px`;
     this.element.style.height = `${this.height}px`;

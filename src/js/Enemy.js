@@ -4,7 +4,7 @@ export default class Enemy {
       this.y = initialY;
       this.speedX = 2; // Скорость по оси X
       this.speedY = 2; // Скорость по оси Y 
-      this.width = 30;
+      this.width = 50;
       this.height = 30;
       this.container = container;
       this.element = document.createElement('div');
@@ -14,6 +14,8 @@ export default class Enemy {
       this.element.style.backgroundColor = 'green';
       this.element.style.left = `${this.x}px`;
       this.element.style.top = `${this.y}px`;
+
+      this.element.style.backgroundColor = 'yellow';
   
       container.appendChild(this.element);
   
@@ -22,23 +24,25 @@ export default class Enemy {
     }
   
     moveEnemy() {
-      this.x += this.speedX;
-      this.y += this.speedY;
-  
-      // Проверка границ игрового поля
-      const containerWidth = this.container.offsetWidth;
-      const containerHeight = this.container.offsetHeight;
-  
-      if (this.x <= 0 || this.x + this.width >= containerWidth) {
-        this.speedX *= -1; // Изменение направления движения по горизонтали
-      }
-  
-      if (this.y >= containerHeight) {
-        this.y = 0; // Вернуть врага в начальное положение, если он достигает нижней границы
-      }
-  
-      this.updatePosition();
-      requestAnimationFrame(this.moveEnemy);
+        const containerWidth = this.container.offsetWidth;
+        const containerHeight = this.container.offsetHeight;
+        const enemyWidth = this.width;
+
+        this.x += this.speedX;
+
+        if (this.x <= 0 || this.x + enemyWidth >= containerWidth) {
+            this.speedX *= -1;
+            this.y += this.height; // Опускание на следующий ряд
+
+            // Дополнительная проверка, чтобы враги не выходили за пределы нижней границы
+            if (this.y >= containerHeight) {
+                //console.log("Game Over");
+                return;
+            }
+        }
+
+        this.updatePosition();
+        requestAnimationFrame(this.moveEnemy);
     }
   
     updatePosition() {
