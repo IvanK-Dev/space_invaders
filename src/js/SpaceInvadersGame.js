@@ -46,7 +46,7 @@ export default class SpaceInvadersGame {
           this.gameBoard
         );
 
-        this.enemies.push(enemy); // Добавьте врага в массив
+        this.enemies.push(enemy); //Добавление врага в массив
       }
     }
   }
