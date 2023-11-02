@@ -1,22 +1,26 @@
 import Bullet from './Bullet.js';
 
 export default class Player {
-  constructor(initialX, initialY, container) {
-    this.x = initialX;
-    this.y = container.offsetHeight-initialY;
+  // constructor(initialX, initialY, container) {
+  constructor(width, height, container) {
+    this.x = container.offsetWidth / 2 - width / 2;
+    this.y = container.offsetHeight - height - 50;
     this.speed = 5;
-    this.width = 50;
-    this.height = 25;
+    this.width = width;
+    this.height = height;
+    this.bullet = null;
     this.container = container;
-    this.playerCreate()
-    this.updateGame = this.updateGame.bind(this);
-    this.updateGame();
+    this.createPlayerElement();
+    this.updatePlayer = this.updatePlayer.bind(this);
+    this.updatePlayer();
+
+    this.isMovingLeft = false;
+    this.isMovingRight = false;
   }
 
-  playerCreate=()=>{
-
+  createPlayerElement = () => {
     this.element = document.createElement('div');
-    this.element.id='player'
+    this.element.id = 'player';
 
     this.element.style.position = 'absolute';
     this.element.style.width = `${this.width}px`;
@@ -24,33 +28,30 @@ export default class Player {
     this.element.style.backgroundColor = 'blue';
     this.element.style.left = `${this.x}px`;
     this.element.style.top = `${this.y}px`;
-      this.bullet = null;
 
     this.container.appendChild(this.element);
 
-    this.handleKeyPress = this.handleKeyPress.bind(this);
-    document.addEventListener('keydown', this.handleKeyPress);
-  
-    this.maxLeftPosition=0;
-    this.maxRightPosition=this.container.offsetWidth-this.width;
-  
-  }
+    document.addEventListener('keydown', this.handleKeyChange);
+    document.addEventListener('keyup', this.handleKeyChange);
 
-  moveLeft() {
+    this.maxLeftPosition = 0;
+    this.maxRightPosition = this.container.offsetWidth - this.width;
+  };
+
+  moveLeft = () => {
     this.x -= this.speed;
-    if(this.x<=this.maxLeftPosition) this.x=this.maxLeftPosition
+    if (this.x <= this.maxLeftPosition) this.x = this.maxLeftPosition;
     this.updatePosition();
-  }
+  };
 
-  moveRight() {
-
+  moveRight = () => {
     this.x += this.speed;
-    if(this.x>=this.maxRightPosition) this.x=this.maxRightPosition
+    if (this.x >= this.maxRightPosition) this.x = this.maxRightPosition;
 
     this.updatePosition();
-  }
+  };
 
-  shoot() {
+  shoot = () => {
     if (!this.bullet) {
       this.bullet = new Bullet(
         this.x + this.width / 2 - 2,
@@ -58,64 +59,37 @@ export default class Player {
         this.container
       );
     }
-  }
-
-  handleBulletCollision() {
-    if (this.bullet) {
-      for (let i = 0; i < this.enemies.length; i++) {
-        const enemy = this.enemies[i];
-        if (
-          this.bullet.x < enemy.x + enemy.width &&
-          this.bullet.x + this.bullet.width > enemy.x &&
-          this.bullet.y < enemy.y + enemy.height &&
-          this.bullet.y + this.bullet.height > enemy.y
-        ) {
-          // Обработка столкновения
-          enemy.remove();
-          this.enemies.splice(i, 1);
-
-          this.bullet.remove();
-          this.bullet = null;
-          break;
-        }
-      }
-    }
-  }
-
-  updateGame = () => {
-    this.updatePosition();
-    // this.handleBulletCollision();
-
-    this.updatePosition();
-    if (this.bullet) {
-      this.bullet.move();
-      if (this.bullet.y < 0) {
-        this.bullet.remove();
-        this.bullet = null;
-      }
-    }
-    requestAnimationFrame(this.updateGame);
   };
 
-  updatePosition() {
-    this.element.style.left = `${this.x}px`;
-    // this.element.style.top = `${this.y}px`;
-  }
+  updatePlayer = () => {
+    if (this.isMovingLeft) {
+      this.moveLeft();
+    } else if (this.isMovingRight) {
+      this.moveRight();
+    }
+    requestAnimationFrame(this.updatePlayer);
+  };
 
-  handleKeyPress(event) {
+  updatePosition = () => {
+    this.element.style.left = `${this.x}px`;
+  };
+
+  handleKeyChange = (event) => {
     switch (event.key) {
       case 'ArrowLeft':
-        this.moveLeft();
+        this.isMovingLeft = event.type === 'keydown';
         break;
       case 'ArrowRight':
-        this.moveRight();
+        this.isMovingRight = event.type === 'keydown';
         break;
       case ' ':
-        this.shoot();
-        event.preventDefault();
+        if (event.type === 'keydown') {
+          this.shoot();
+          event.preventDefault();
+        }
         break;
       default:
         break;
     }
-  }
+  };
 }
