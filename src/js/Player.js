@@ -1,14 +1,16 @@
-import Bullet from './Bullet.js';
+import { getElementCoordinates } from '../helpers/getElementCoordinates.js';
+import { shoot } from '../helpers/shoot.js';
 
 export default class Player {
-  // constructor(initialX, initialY, container) {
   constructor(width, height, container) {
     this.x = container.offsetWidth / 2 - width / 2;
-    this.y = container.offsetHeight - height - 50;
+    this.y = container.offsetHeight - height - 10;
     this.speed = 5;
+    this.shotSpeed = 5;
     this.width = width;
     this.height = height;
     this.bullet = null;
+    this.lifes = 3;
     this.container = container;
     this.createPlayerElement();
     this.updatePlayer = this.updatePlayer.bind(this);
@@ -51,15 +53,7 @@ export default class Player {
     this.updatePosition();
   };
 
-  shoot = () => {
-    if (!this.bullet) {
-      this.bullet = new Bullet(
-        this.x + this.width / 2 - 2,
-        this.y,
-        this.container
-      );
-    }
-  };
+  playerShoot = shoot.bind(this);
 
   updatePlayer = () => {
     if (this.isMovingLeft) {
@@ -67,6 +61,7 @@ export default class Player {
     } else if (this.isMovingRight) {
       this.moveRight();
     }
+
     requestAnimationFrame(this.updatePlayer);
   };
 
@@ -84,7 +79,7 @@ export default class Player {
         break;
       case ' ':
         if (event.type === 'keydown') {
-          this.shoot();
+          this.playerShoot();
           event.preventDefault();
         }
         break;
@@ -92,4 +87,6 @@ export default class Player {
         break;
     }
   };
+
+  getPlayerCoordinates = () => getElementCoordinates(this.element);
 }
