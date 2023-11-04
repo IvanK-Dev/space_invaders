@@ -1,8 +1,8 @@
 import { GAME_OPTIONS } from '../constants/game_options.js';
-import { ENEMIES_MAP } from '../constants/enemiesMap.js';
+import { ENEMIES_MAP } from '../constants/enemies_map.js';
 import Enemy from './Enemy.js';
 import Player from './Player.js';
-import { ENEMY_PROPS } from '../constants/enemyProps.js';
+import Barrier from './Barrier.js';
 
 /**
  * Представляет игру "Space Invaders".
@@ -14,6 +14,11 @@ export default class SpaceInvadersGame {
     this.gameBoard = this.createGameBoard();
     this.player = this.createPlayer();
     this.enemies = this.createEnemies(ENEMIES_MAP);
+    this.barriers = this.createBarriers(
+      4,
+      GAME_OPTIONS.barrier.width,
+      GAME_OPTIONS.barrier.height
+    ); // Создание барьеров
     this.updateGame();
   }
 
@@ -44,6 +49,8 @@ export default class SpaceInvadersGame {
    */
   createPlayer = () =>
     new Player(
+      0,
+      0,
       GAME_OPTIONS.player.width,
       GAME_OPTIONS.player.height,
       this.gameBoard
@@ -79,14 +86,84 @@ export default class SpaceInvadersGame {
   };
 
   /**
-   * Обрабатывает столкновение снаряда игрока с врагами.
+   * Создает барьеры.
+   * @param {number} barrierCount - Количество барьеров для создания.
+   * @param {number} barrierWidth - Ширина каждого барьера.
+   * @param {number} barrierHeight - Высота каждого барьера.
+   */
+  createBarriers = (barrierCount, barrierWidth, barrierHeight) => {
+    const barriers = [];
+    const distanceBetweenBarriers =
+      (this.gameBoard.offsetWidth - barrierWidth * barrierCount) /
+      (barrierCount + 1); // Расстояние между барьерами
+    const playerTop = this.player.y; // Определение верхней границы игрока
+    const heightAbovePlayer = barrierHeight; //Высота над игроком
+
+    for (let i = 0; i < barrierCount; i++) {
+      const barrier = new Barrier(
+        i * (barrierWidth + distanceBetweenBarriers) + distanceBetweenBarriers,
+        playerTop,
+        barrierWidth,
+        barrierHeight,
+        this.gameBoard,
+        heightAbovePlayer
+      );
+      barriers.push(barrier);
+    }
+    return barriers;
+  };
+
+  checkBulletBarrierCollision = (bullet) => {
+    for (let i = 0; i < this.barriers.length; i++) {
+      const barrier = this.barriers[i];
+      const bulletCoordinates = bullet.getCoordinates();
+      const barrierCoordinates = barrier.getCoordinates();
+
+      if (
+        bulletCoordinates.x + bulletCoordinates.width > barrierCoordinates.x &&
+        bulletCoordinates.x < barrierCoordinates.x + barrierCoordinates.width &&
+        bulletCoordinates.y <
+          barrierCoordinates.y + barrierCoordinates.height &&
+        bulletCoordinates.y + bulletCoordinates.height > barrierCoordinates.y
+      ) {
+        barrier.hpoint--;
+
+        if (barrier.hpoint <= 0) {
+          barrier.removeBarrier();
+          this.barriers = this.barriers.filter((b) => b !== barrier);
+        }
+
+        bullet.bulletRemove();
+        bullet = null;
+
+        break;
+      }
+    }
+    return bullet === null;
+  };
+
+  handleBulletBarrierCollision = () => {
+    if (this.player.bullet) {
+      if (this.checkBulletBarrierCollision(this.player.bullet))
+        this.player.bullet = null;
+    }
+
+    this.enemies.forEach((enemy) => {
+      if (enemy.bullet) {
+        if (this.checkBulletBarrierCollision(enemy.bullet)) enemy.bullet = null;
+      }
+    });
+  };
+
+  /**
+   * Обрабатывает столкновение патрона игрока с врагами.
    */
   handleBulletEnemyCollision = () => {
     for (let i = 0; i < this.enemies.length; i++) {
       const enemy = this.enemies[i];
       if (this.player.bullet) {
-        const bulletCoordinates = this.player.bullet.getBulletCoordinates();
-        const enemyCoordinates = enemy.getEnemyCoordinates();
+        const bulletCoordinates = this.player.bullet.getCoordinates();
+        const enemyCoordinates = enemy.getCoordinates();
 
         if (
           bulletCoordinates.x + bulletCoordinates.width > enemyCoordinates.x &&
@@ -97,8 +174,10 @@ export default class SpaceInvadersGame {
           enemy.hpoint--;
 
           if (enemy.hpoint <= 0) {
+            //console.log("coordinates",bulletCoordinates,bulletCoordinates1 )
+
             this.player.score += enemy.pointsPerKill;
-            enemy.enemyElement.remove(); // Удаление элемента врага
+            enemy.element.remove(); // Удаление элемента врага
             enemy.stopShooting();
             enemy.removeEnemy();
             this.enemies.splice(i, 1); // Удаление врага из массива
@@ -113,16 +192,18 @@ export default class SpaceInvadersGame {
   };
 
   /**
-   * Обрабатывает столкновение снаряда врага с игроком.
+   * Обрабатывает столкновение патрона врага с игроком.
    */
   handleBulletPlayerCollision = () => {
     for (let i = 0; i < this.enemies.length; i++) {
       const enemy = this.enemies[i];
       // console.log('enemy.bullet', enemy.bullet);
       if (enemy.bullet) {
-        const bulletCoordinates = enemy.bullet.getBulletCoordinates();
-        const playerCoordinates = this.player.getPlayerCoordinates();
+        ///const bulletCoordinates = enemy.bullet.getBulletCoordinates();
+        const bulletCoordinates = enemy.bullet.getCoordinates();
+        const playerCoordinates = this.player.getCoordinates();
 
+        //Сравнение координат патрона врага с игроком
         if (
           bulletCoordinates.x > playerCoordinates.x &&
           bulletCoordinates.x + bulletCoordinates.width <
@@ -134,8 +215,8 @@ export default class SpaceInvadersGame {
         ) {
           this.player.lifes--;
           console.log('this.player.lifes', this.player.lifes);
-          enemy.bullet.bulletRemove(); // Удаление пули врага
-          enemy.bullet = null; // Обнуление ссылки на пулю врага
+          enemy.bullet.bulletRemove(); // Удаление патрона врага
+          enemy.bullet = null; // Обнуление ссылки на патрон врага
           break; // Прекращаем обработку столкновений после удаления врага
         }
       }
@@ -147,10 +228,10 @@ export default class SpaceInvadersGame {
    * @returns {boolean} - Возвращает true, если есть столкновение, иначе false.
    */
   handleCollisionWithPlayerArea = () => {
-    const playerCoordinates = this.player.getPlayerCoordinates();
+    const playerCoordinates = this.player.getCoordinates();
 
     return this.enemies.some((enemy) => {
-      const enemyCoordinates = enemy.getEnemyCoordinates();
+      const enemyCoordinates = enemy.getCoordinates();
       return (
         enemyCoordinates.y + enemyCoordinates.height >= playerCoordinates.y
       );
@@ -186,7 +267,7 @@ export default class SpaceInvadersGame {
     this.player.speed = 0; // Остановка движения игрока
     this.enemies.forEach((enemy) => {
       enemy.stopShooting(); // Остановка атаки врагов
-      enemy.speedX = 0; // Остановка движения врагов по горизонтали
+      enemy.speed = 0; // Остановка движения врагов по горизонтали
     });
     cancelAnimationFrame(this.animationFrameId); // Остановка игровой анимации
     console.log('Game Over');
@@ -199,6 +280,7 @@ export default class SpaceInvadersGame {
   handleCollisions = () => {
     this.handleBulletEnemyCollision(); // Обработка столкновения снаряда игрока с врагами
     this.handleBulletPlayerCollision(); // Обработка столкновения снаряда врагов с игроком
+    this.handleBulletBarrierCollision();
   };
 
   /**

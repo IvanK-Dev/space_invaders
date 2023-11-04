@@ -12,10 +12,14 @@ export const GAME_OPTIONS = {
   enemy: {
     width: 50,
     height: 30,
-    spacingX: 10,
+    spacingX: 20,
   },
   bullet: {
     width: 5,
     height: 10,
   },
+  barrier:{
+    width:70,
+    height:50,
+  }
 };

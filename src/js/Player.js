@@ -1,29 +1,30 @@
-import { getElementCoordinates } from '../helpers/getElementCoordinates.js';
 import { shoot } from '../helpers/shoot.js';
+import GameObject from './GameObject.js';
 
 /**
  * Представляет экземпляр игрока.
  */
-export default class Player {
+export default class Player extends GameObject {
   /**
    * Создает новый экземпляр игрока.
    * @constructor
+   * @param {number} x - Позиция по горизонтали.
+   * @param {number} y - Позиция по вертикали.
    * @param {number} width - Ширина игрока.
    * @param {number} height - Высота игрока.
    * @param {HTMLElement} container - Родительский контейнер игрока.
    */
-  constructor(width, height, container) {
-    this.x = container.offsetWidth / 2 - width / 2;
-    this.y = container.offsetHeight - height - 10;
+  constructor(x, y, width, height, container) {
+    super(x, y, width, height, container);
+
     this.speed = 5;
     this.shotSpeed = 5;
-    this.width = width;
-    this.height = height;
     this.bullet = null;
     this.lifes = 3;
-    this.container = container;
 
-    this.createPlayerElement();
+    this.x = container.offsetWidth / 2 - width / 2;
+    this.y = container.offsetHeight - height - 10;
+    this.addElementProps();
 
     this.playerShoot = shoot.bind(this);
 
@@ -35,22 +36,14 @@ export default class Player {
     this.isMovingLeft = false;
     this.isMovingRight = false;
   }
-
   /**
-   * Создает DOM-элемент игрока и добавляет его на игровое поле.
+   * Добавляет свойства элемента игрока.
    */
-  createPlayerElement = () => {
-    this.element = document.createElement('div');
+  addElementProps = () => {
     this.element.id = 'player';
-
-    this.element.style.position = 'absolute';
-    this.element.style.width = `${this.width}px`;
-    this.element.style.height = `${this.height}px`;
     this.element.style.backgroundColor = 'blue';
     this.element.style.left = `${this.x}px`;
     this.element.style.top = `${this.y}px`;
-
-    this.container.appendChild(this.element);
 
     document.addEventListener('keydown', this.handleKeyChange);
     document.addEventListener('keyup', this.handleKeyChange);
@@ -92,13 +85,6 @@ export default class Player {
   };
 
   /**
-   * Обновляет позицию игрока.
-   */
-  updatePosition = () => {
-    this.element.style.left = `${this.x}px`;
-  };
-
-  /**
    * Обрабатывает события клавиатуры для управления игроком.
    * @param {Event} event - Событие клавиатуры.
    */
@@ -120,10 +106,4 @@ export default class Player {
         break;
     }
   };
-
-  /**
-   * Получает координаты игрока.
-   * @returns {object} - Объект с координатами x, y, width и height игрока.
-   */
-  getPlayerCoordinates = () => getElementCoordinates(this.element);
 }

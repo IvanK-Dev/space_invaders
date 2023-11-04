@@ -1,29 +1,15 @@
-import { ENEMY_PROPS } from '../constants/enemyProps.js';
-import { getElementCoordinates } from '../helpers/getElementCoordinates.js';
+import { ENEMY_PROPS } from '../constants/enemy_props.js';
 import { shoot } from '../helpers/shoot.js';
+import GameObject from './GameObject.js';
 
 /**
  * Представляет экземпляр врага.
  */
-export default class Enemy {
-  /**
-   * Создает новый экземпляр врага.
-   * @constructor
-   * @param {number} x - Позиция по горизонтали.
-   * @param {number} y - Позиция по вертикали.
-   * @param {number} enemyWidth - Ширина врага.
-   * @param {number} enemyHeight - Высота врага.
-   * @param {HTMLElement} container - Родительский контейнер врага.
-   * @param {number} enemyLevel - Уровень врага.
-   */
-  constructor(x, y, enemyWidth, enemyHeight, container, enemyLevel) {
-    this.x = x;
-    this.y = y;
-    this.speedX = 1;
-    this.speedY = 1;
-    this.width = enemyWidth;
-    this.height = enemyHeight;
-    this.container = container;
+export default class Enemy extends GameObject {
+  constructor(x, y, width, height, container, enemyLevel) {
+    super(x, y, width, height, container);
+
+    this.speed = 1;
     this.enemyLevel = enemyLevel;
 
     this.shotSpeed = ENEMY_PROPS[`lvl${this.enemyLevel}`].shootSpeed;
@@ -31,8 +17,8 @@ export default class Enemy {
     this.pointsPerKill = ENEMY_PROPS[`lvl${this.enemyLevel}`].points;
     this.bullet = null;
 
-    this.enemyElement = this.createEnemyElement();
-    container.appendChild(this.enemyElement);
+    // this.enemyElement = this.createEnemyElement();
+    this.addElementProps();
 
     this.moveEnemy = this.moveEnemy.bind(this);
     this.moveEnemy();
@@ -45,54 +31,29 @@ export default class Enemy {
    * Создает DOM-элемент врага и возвращает его.
    * @returns {HTMLElement} - DOM-элемент врага.
    */
-  createEnemyElement = () => {
-    const enemyElement = document.createElement('div');
-
-    enemyElement.classList.add('enemy');
-    enemyElement.style.position = 'absolute';
-    enemyElement.style.width = `${this.width}px`;
-    enemyElement.style.height = `${this.height}px`;
-    enemyElement.style.backgroundColor =
+  addElementProps = () => {
+    this.element.classList.add('enemy');
+    this.element.style.backgroundColor =
       ENEMY_PROPS[`lvl${this.enemyLevel}`].view;
-    enemyElement.style.left = `${this.x}px`;
-    enemyElement.style.top = `${this.y}px`;
-
-    return enemyElement;
   };
 
   /**
    * Двигает врага по игровому полю.
    */
   moveEnemy = () => {
-    if (!this.enemyElement) return;
+    if (!this.element) return;
     const containerWidth = this.container.offsetWidth;
-    const enemyWidth = this.width;
-    const enemyHeight = this.height;
 
-    this.x += this.speedX;
+    this.x += this.speed;
 
-    if (this.x <= 0 || this.x + enemyWidth >= containerWidth) {
-      this.speedX *= -1;
-      this.y += enemyHeight; // Опускание на следующий ряд
+    if (this.x <= 0 || this.x + this.width >= containerWidth) {
+      this.speed *= -1;
+      this.y += this.height; // Опускание на следующий ряд
     }
 
     this.updatePosition();
     requestAnimationFrame(this.moveEnemy);
   };
-
-  /**
-   * Обновляет позицию врага.
-   */
-  updatePosition = () => {
-    this.enemyElement.style.left = `${this.x}px`;
-    this.enemyElement.style.top = `${this.y}px`;
-  };
-
-  /**
-   * Получает координаты врага.
-   * @returns {object} - Объект с координатами x, y, width и height врага.
-   */
-  getEnemyCoordinates = () => getElementCoordinates(this.enemyElement);
 
   /**
    * Начинает стрельбу врага.

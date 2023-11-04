@@ -1,3 +1,4 @@
+import { GAME_OPTIONS } from '../constants/game_options.js';
 import Bullet from '../js/Bullet.js ';
 
 /**
@@ -13,6 +14,8 @@ export function shoot() {
     this.bullet = new Bullet(
       this.x + this.width / 2 - 2,
       this.y,
+      GAME_OPTIONS.bullet.width,
+      GAME_OPTIONS.bullet.height,
       this.container,
       this.shotSpeed
     );

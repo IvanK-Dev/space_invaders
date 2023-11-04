@@ -1,45 +1,34 @@
-import { GAME_OPTIONS } from '../constants/game_options.js';
-import { getElementCoordinates } from '../helpers/getElementCoordinates.js';
+import GameObject from './GameObject.js';
 
 /**
  * Представляет экземпляр патрона.
  */
-export default class Bullet {
+export default class Bullet extends GameObject {
   /**
    * Создает новый экземпляр патрона.
    * @constructor
    * @param {number} x - Позиция по горизонтали.
    * @param {number} y - Позиция по вертикали.
+   * @param {number} width - Ширина патрона.
+   * @param {number} height - Высота патрона.
    * @param {HTMLElement} container - Родительский контейнер патрона.
    * @param {number} speed - Скорость движения патрона.
    */
-  constructor(x, y, container, speed) {
-    this.x = x;
-    this.y = y;
+  constructor(x, y, width, height, container, speed) {
+    super(x, y, width, height, container);
+
     this.speed = speed;
-    this.width = GAME_OPTIONS.bullet.width;
-    this.height = GAME_OPTIONS.bullet.height;
-    this.container = container;
-    this.bulletElement = this.createBulletElement();
+
+    this.addElementProps();
     this.updateBullet();
   }
 
   /**
-   * Создает DOM-элемент патрона и возвращает его.
-   * @returns {HTMLElement} - DOM-элемент патрона.
+   * Создает DOM-элемент патрона и добавляет его в контейнер.
    */
-  createBulletElement = () => {
-    const bullet = document.createElement('div');
-    bullet.classList.add('bullet');
-    bullet.style.position = 'absolute';
-    bullet.style.width = `${this.width}px`;
-    bullet.style.height = `${this.height}px`;
-    bullet.style.backgroundColor = 'red';
-    bullet.style.left = `${this.x}px`;
-    bullet.style.top = `${this.y}px`;
-
-    this.container.appendChild(bullet);
-    return bullet;
+  addElementProps = () => {
+    this.element.classList.add('bullet');
+    this.element.style.backgroundColor = 'red';
   };
 
   /**
@@ -51,30 +40,15 @@ export default class Bullet {
   };
 
   /**
-   * Обновляет позицию патрона.
-   */
-  updatePosition = () => {
-    this.bulletElement.style.left = `${this.x}px`;
-    this.bulletElement.style.top = `${this.y}px`;
-  };
-
-  /**
    * Удаляет патрон.
    */
   bulletRemove = () => {
     // Остановить анимацию
     cancelAnimationFrame(this.animationFrameId);
     this.animationFrameId = null;
-    // Удалить элемент из DOM
-    this.bulletElement.remove();
-    this.bulletElement = null;
+    this.element.remove();
+    this.element = null;
   };
-
-  /**
-   * Получает координаты патрона.
-   * @returns {object} - Объект с координатами x, y, width и height патрона.
-   */
-  getBulletCoordinates = () => getElementCoordinates(this.bulletElement);
 
   /**
    * Обновляет патрон, двигая его и запрашивая следующий кадр анимации.
