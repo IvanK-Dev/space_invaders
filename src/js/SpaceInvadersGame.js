@@ -163,19 +163,19 @@ export default class SpaceInvadersGame {
   updateGame = () => {
     // Проверяем условия завершения игры - отсутствие жизней у игрока или столкновение с врагами.
     if (this.player.lifes <= 0 || this.handleCollisionWithPlayerArea()) {
-      this.gameOver();// Игра завершена
+      this.gameOver(); // Игра завершена
       return;
     }
 
-    this.handleCollisions();// Обработка столкновений объектов в игре
+    this.handleCollisions(); // Обработка столкновений объектов в игре
 
     // Удаляем снаряд игрока, если он выходит за пределы игрового поля.
     if (this.player.bullet && this.player.bullet.y < 0) {
-      this.player.bullet.bulletRemove();// Удаление снаряда игрока
-      this.player.bullet = null;// Сброс ссылки на снаряд игрока
+      this.player.bullet.bulletRemove(); // Удаление снаряда игрока
+      this.player.bullet = null; // Сброс ссылки на снаряд игрока
     }
 
-    this.cleanupBullets();// Очистка снарядов, вышедших за пределы игрового поля
+    this.cleanupBullets(); // Очистка снарядов, вышедших за пределы игрового поля
     this.animationFrameId = requestAnimationFrame(this.updateGame);
   };
 
@@ -183,12 +183,12 @@ export default class SpaceInvadersGame {
    * Обработка завершения игры.
    */
   gameOver = () => {
-    this.player.speed = 0;// Остановка движения игрока
+    this.player.speed = 0; // Остановка движения игрока
     this.enemies.forEach((enemy) => {
-      enemy.stopShooting();// Остановка атаки врагов
-      enemy.speedX = 0;// Остановка движения врагов по горизонтали
+      enemy.stopShooting(); // Остановка атаки врагов
+      enemy.speedX = 0; // Остановка движения врагов по горизонтали
     });
-    cancelAnimationFrame(this.animationFrameId);// Остановка игровой анимации
+    cancelAnimationFrame(this.animationFrameId); // Остановка игровой анимации
     console.log('Game Over');
     return;
   };
@@ -197,8 +197,9 @@ export default class SpaceInvadersGame {
    * Обработка столкновений игровых объектов.
    */
   handleCollisions = () => {
-    this.handleBulletEnemyCollision();// Обработка столкновения снаряда игрока с врагами
+    this.handleBulletEnemyCollision(); // Обработка столкновения снаряда игрока с врагами
     this.handleBulletPlayerCollision(); // Обработка столкновения снаряда врагов с игроком
+  };
 
   /**
    * Очистка снарядов, вышедших за пределы игрового поля.
