@@ -1,3 +1,3 @@
-import SpaceInvadersGame from "./SpaceInvadersGame.js";
+import SpaceInvadersGame from './SpaceInvadersGame.js';
 
 const game = new SpaceInvadersGame();

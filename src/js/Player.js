@@ -1,7 +1,17 @@
 import { getElementCoordinates } from '../helpers/getElementCoordinates.js';
 import { shoot } from '../helpers/shoot.js';
 
+/**
+ * Представляет экземпляр игрока.
+ */
 export default class Player {
+  /**
+   * Создает новый экземпляр игрока.
+   * @constructor
+   * @param {number} width - Ширина игрока.
+   * @param {number} height - Высота игрока.
+   * @param {HTMLElement} container - Родительский контейнер игрока.
+   */
   constructor(width, height, container) {
     this.x = container.offsetWidth / 2 - width / 2;
     this.y = container.offsetHeight - height - 10;
@@ -12,14 +22,23 @@ export default class Player {
     this.bullet = null;
     this.lifes = 3;
     this.container = container;
+
     this.createPlayerElement();
+
+    this.playerShoot = shoot.bind(this);
+
     this.updatePlayer = this.updatePlayer.bind(this);
     this.updatePlayer();
+
+    this.score = 0;
 
     this.isMovingLeft = false;
     this.isMovingRight = false;
   }
 
+  /**
+   * Создает DOM-элемент игрока и добавляет его на игровое поле.
+   */
   createPlayerElement = () => {
     this.element = document.createElement('div');
     this.element.id = 'player';
@@ -40,12 +59,18 @@ export default class Player {
     this.maxRightPosition = this.container.offsetWidth - this.width;
   };
 
+  /**
+   * Двигает игрока влево.
+   */
   moveLeft = () => {
     this.x -= this.speed;
     if (this.x <= this.maxLeftPosition) this.x = this.maxLeftPosition;
     this.updatePosition();
   };
 
+  /**
+   * Двигает игрока вправо.
+   */
   moveRight = () => {
     this.x += this.speed;
     if (this.x >= this.maxRightPosition) this.x = this.maxRightPosition;
@@ -53,8 +78,9 @@ export default class Player {
     this.updatePosition();
   };
 
-  playerShoot = shoot.bind(this);
-
+  /**
+   * Обновляет позицию игрока на игровом поле.
+   */
   updatePlayer = () => {
     if (this.isMovingLeft) {
       this.moveLeft();
@@ -65,10 +91,17 @@ export default class Player {
     requestAnimationFrame(this.updatePlayer);
   };
 
+  /**
+   * Обновляет позицию игрока.
+   */
   updatePosition = () => {
     this.element.style.left = `${this.x}px`;
   };
 
+  /**
+   * Обрабатывает события клавиатуры для управления игроком.
+   * @param {Event} event - Событие клавиатуры.
+   */
   handleKeyChange = (event) => {
     switch (event.key) {
       case 'ArrowLeft':
@@ -88,5 +121,9 @@ export default class Player {
     }
   };
 
+  /**
+   * Получает координаты игрока.
+   * @returns {object} - Объект с координатами x, y, width и height игрока.
+   */
   getPlayerCoordinates = () => getElementCoordinates(this.element);
 }

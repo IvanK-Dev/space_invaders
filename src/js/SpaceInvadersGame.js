@@ -4,6 +4,9 @@ import Enemy from './Enemy.js';
 import Player from './Player.js';
 import { ENEMY_PROPS } from '../constants/enemyProps.js';
 
+/**
+ * Представляет игру "Space Invaders".
+ */
 export default class SpaceInvadersGame {
   constructor() {
     this.parentElement = document.getElementById('game');
@@ -14,6 +17,10 @@ export default class SpaceInvadersGame {
     this.updateGame();
   }
 
+  /**
+   * Создает игровое поле и добавляет его в DOM.
+   * @returns {HTMLElement} - Элемент игрового поля.
+   */
   createGameBoard = () => {
     const gameBoard = document.createElement('div');
     gameBoard.classList.add('game-board');
@@ -26,6 +33,15 @@ export default class SpaceInvadersGame {
     return gameBoard;
   };
 
+  /**
+   * Создает информационные панели игры.
+   */
+  createGameInformationPanels = () => {};
+
+  /**
+   * Создает игрока.
+   * @returns {Player} - Игрок.
+   */
   createPlayer = () =>
     new Player(
       GAME_OPTIONS.player.width,
@@ -33,6 +49,11 @@ export default class SpaceInvadersGame {
       this.gameBoard
     );
 
+  /**
+   * Создает врагов.
+   * @param {number[][]} enemiesMap - Карта врагов.
+   * @returns {Enemy[]} - Массив врагов.
+   */
   createEnemies = (enemiesMap) => {
     const enemies = []; // Массив для хранения врагов
     const enemyWidth = GAME_OPTIONS.enemy.width;
@@ -57,6 +78,9 @@ export default class SpaceInvadersGame {
     return enemies;
   };
 
+  /**
+   * Обрабатывает столкновение снаряда игрока с врагами.
+   */
   handleBulletEnemyCollision = () => {
     for (let i = 0; i < this.enemies.length; i++) {
       const enemy = this.enemies[i];
@@ -73,6 +97,7 @@ export default class SpaceInvadersGame {
           enemy.hpoint--;
 
           if (enemy.hpoint <= 0) {
+            this.player.score += enemy.pointsPerKill;
             enemy.enemyElement.remove(); // Удаление элемента врага
             enemy.stopShooting();
             enemy.removeEnemy();
@@ -87,6 +112,9 @@ export default class SpaceInvadersGame {
     }
   };
 
+  /**
+   * Обрабатывает столкновение снаряда врага с игроком.
+   */
   handleBulletPlayerCollision = () => {
     for (let i = 0; i < this.enemies.length; i++) {
       const enemy = this.enemies[i];
@@ -114,48 +142,67 @@ export default class SpaceInvadersGame {
     }
   };
 
+  /**
+   * Проверяет столкновение врагов с областью игрока.
+   * @returns {boolean} - Возвращает true, если есть столкновение, иначе false.
+   */
   handleCollisionWithPlayerArea = () => {
     const playerCoordinates = this.player.getPlayerCoordinates();
-  
-    return this.enemies.some(enemy => {
+
+    return this.enemies.some((enemy) => {
       const enemyCoordinates = enemy.getEnemyCoordinates();
-      return enemyCoordinates.y + enemyCoordinates.height >= playerCoordinates.y;
+      return (
+        enemyCoordinates.y + enemyCoordinates.height >= playerCoordinates.y
+      );
     });
   };
 
+  /**
+   * Обновляет состояние игры.
+   */
   updateGame = () => {
-    if (this.player.lifes <= 0||this.handleCollisionWithPlayerArea()) {
-      this.gameOver();
+    // Проверяем условия завершения игры - отсутствие жизней у игрока или столкновение с врагами.
+    if (this.player.lifes <= 0 || this.handleCollisionWithPlayerArea()) {
+      this.gameOver();// Игра завершена
       return;
     }
 
-    this.handleCollisions();
+    this.handleCollisions();// Обработка столкновений объектов в игре
 
+    // Удаляем снаряд игрока, если он выходит за пределы игрового поля.
     if (this.player.bullet && this.player.bullet.y < 0) {
-      this.player.bullet.bulletRemove();
-      this.player.bullet = null;
+      this.player.bullet.bulletRemove();// Удаление снаряда игрока
+      this.player.bullet = null;// Сброс ссылки на снаряд игрока
     }
 
-    this.cleanupBullets();
+    this.cleanupBullets();// Очистка снарядов, вышедших за пределы игрового поля
     this.animationFrameId = requestAnimationFrame(this.updateGame);
   };
 
+  /**
+   * Обработка завершения игры.
+   */
   gameOver = () => {
-    this.player.speed = 0;
+    this.player.speed = 0;// Остановка движения игрока
     this.enemies.forEach((enemy) => {
-      enemy.stopShooting();
-      enemy.speedX = 0;
+      enemy.stopShooting();// Остановка атаки врагов
+      enemy.speedX = 0;// Остановка движения врагов по горизонтали
     });
-    cancelAnimationFrame(this.animationFrameId);
-    console.log('Game Over') ;
-    return
+    cancelAnimationFrame(this.animationFrameId);// Остановка игровой анимации
+    console.log('Game Over');
+    return;
   };
 
+  /**
+   * Обработка столкновений игровых объектов.
+   */
   handleCollisions = () => {
-    this.handleBulletEnemyCollision();
-    this.handleBulletPlayerCollision();
-  };
+    this.handleBulletEnemyCollision();// Обработка столкновения снаряда игрока с врагами
+    this.handleBulletPlayerCollision(); // Обработка столкновения снаряда врагов с игроком
 
+  /**
+   * Очистка снарядов, вышедших за пределы игрового поля.
+   */
   cleanupBullets = () => {
     for (let i = 0; i < this.enemies.length; i++) {
       const enemy = this.enemies[i];

@@ -1,3 +1,4 @@
+//Опции игровых составляющих
 export const GAME_OPTIONS = {
   gameBoard: {
     width: '800px',
