@@ -12,6 +12,7 @@ export default class Enemy extends GameObject {
     this.speed = 1;
     this.enemyLevel = enemyLevel;
 
+
     this.shotSpeed = ENEMY_PROPS[`lvl${this.enemyLevel}`].shootSpeed;
     this.hpoint = ENEMY_PROPS[`lvl${this.enemyLevel}`].hpoint;
     this.pointsPerKill = ENEMY_PROPS[`lvl${this.enemyLevel}`].points;
@@ -33,8 +34,20 @@ export default class Enemy extends GameObject {
    */
   addElementProps = () => {
     this.element.classList.add('enemy');
-    this.element.style.backgroundColor =
-      ENEMY_PROPS[`lvl${this.enemyLevel}`].view;
+    if(this.enemyLevel===6){
+      this.width*=2
+      this.height*=2
+      this.speed*=1.2
+    }
+    this.element.innerHTML=`<svg width="${this.width}" height="${this.height}">
+    <use
+      class="enemy__icon"
+      href="../src/assets/sprite.svg#enemyLvl${this.enemyLevel}"
+    ></use>
+  </svg>`
+
+    // this.element.style.backgroundColor =
+    //   ENEMY_PROPS[`lvl${this.enemyLevel}`].view;
   };
 
   /**

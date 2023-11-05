@@ -1,18 +1,28 @@
-body{
-
-    /* display: flex;
+body {
+  /* display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh; */
 }
 
-.game-board{
-    position: relative;
-    border: 2px solid whitesmoke
+.game-board {
+  position: relative;
+  border: 2px solid whitesmoke;
 }
 
-#game{
-    background-color: #000;
-    padding: 100px;
+#game {
+  background-color: #000;
+  padding: 100px;
+}
+svg {
+  margin: 0;
+  padding: 0;
 }
 
+.enemy__icon {
+  display: block;
+}
+
+.player__icon {
+  display: block;
+}

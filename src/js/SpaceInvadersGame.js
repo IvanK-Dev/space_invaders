@@ -97,7 +97,7 @@ export default class SpaceInvadersGame {
       (this.gameBoard.offsetWidth - barrierWidth * barrierCount) /
       (barrierCount + 1); // Расстояние между барьерами
     const playerTop = this.player.y; // Определение верхней границы игрока
-    const heightAbovePlayer = barrierHeight; //Высота над игроком
+    const heightAbovePlayer = barrierHeight/2; //Высота над игроком
 
     for (let i = 0; i < barrierCount; i++) {
       const barrier = new Barrier(

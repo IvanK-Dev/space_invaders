@@ -2,17 +2,17 @@
 export const GAME_OPTIONS = {
   gameBoard: {
     width: '800px',
-    height: '600px',
+    height: '700px',
     backgroundColor: 'black',
   },
   player: {
     width: 50,
-    height: 25,
+    height: 50,
   },
   enemy: {
-    width: 50,
-    height: 30,
-    spacingX: 20,
+    width: 40,
+    height: 40,
+    spacingX: 15,
   },
   bullet: {
     width: 5,
@@ -20,6 +20,6 @@ export const GAME_OPTIONS = {
   },
   barrier:{
     width:70,
-    height:50,
+    height:70,
   }
 };

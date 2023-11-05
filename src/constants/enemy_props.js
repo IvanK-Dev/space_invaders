@@ -40,6 +40,6 @@ export const ENEMY_PROPS = {
     view: 'brown',
     points: 100,
     shooting: true,
-    shootSpeed: -2,
+    shootSpeed: -4,
   },
 };

@@ -41,7 +41,12 @@ export default class Player extends GameObject {
    */
   addElementProps = () => {
     this.element.id = 'player';
-    this.element.style.backgroundColor = 'blue';
+    this.element.innerHTML=`<svg width="${this.width}" height="${this.height}" >
+    <use
+      class="player__icon"
+      href="../src/assets/sprite.svg#player1"
+    ></use>
+  </svg>`
     this.element.style.left = `${this.x}px`;
     this.element.style.top = `${this.y}px`;
 

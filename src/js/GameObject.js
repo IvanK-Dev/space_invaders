@@ -28,7 +28,6 @@ export default class GameObject {
     this.element.style.position = 'absolute';
     this.element.style.width = `${this.width}px`;
     this.element.style.height = `${this.height}px`;
-    this.element.style.backgroundColor = color;
     this.element.style.left = `${this.x}px`;
     this.element.style.top = `${this.y}px`;
 

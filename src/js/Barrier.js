@@ -30,7 +30,13 @@ export default class Barrier extends GameObject {
    */
   addBarrierProps = () => {
     this.y -= 2 * this.heightAbovePlayer;
-    this.createElement('green');
+    this.createElement()
+    this.element.innerHTML=`<svg width="${this.width}" height="${this.height}" >
+    <use
+      class="player__icon"
+      href="../src/assets/sprite.svg#barrier"
+    ></use>
+  </svg>`
     this.element.classList.add('barrier');
   };
 
