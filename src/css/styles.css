@@ -1,8 +1,5 @@
 body {
-  /* display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh; */
+  background-color: #282828;
 }
 
 .game-board {
@@ -26,4 +23,47 @@ svg {
 
 .player__icon {
   display: block;
+}
+
+.modal {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  width: 400px;
+  height: 360px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  padding: 100px;
+  background-color: #000;
+  background-image: url('/src/assets/bg_modal.jpg');
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.modal__button {
+  display: block;
+  padding: 10px 15px;
+  background-color: rgb(24, 24, 24);
+  font-size: 30px;
+  text-shadow: 1px 2px 1px rgb(255, 215, 0);
+  border: rgb(255, 215, 0) 1px solid;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(255, 223, 0, 0);
+  transition: box-shadow 0.3s;
+  border-radius: 8px;
+}
+
+.modal__button:focus,
+.modal__button:hover {
+  background-color: rgb(29, 29, 29);
+  box-shadow: 0 0 20px rgba(255, 223, 0, 0.7);
+}
+
+.score-panel{
+  color: whitesmoke;
+  font-size: 20px;
 }

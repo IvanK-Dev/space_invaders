@@ -1,4 +1,7 @@
+import ModalWindow from './ModalWindow.js';
 import SpaceInvadersGame from './SpaceInvadersGame.js';
 
 const game = new SpaceInvadersGame();
-game.startGame()
+const modal=new ModalWindow()
+
+modal.openModal('SpaceInvaders','Start',game.startGame)

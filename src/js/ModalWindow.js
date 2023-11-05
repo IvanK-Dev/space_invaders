@@ -1,54 +1,53 @@
-class ModalWindow {
-  constructor(gameName, buttonText) {
-    this.gameName = gameName;
+export default class ModalWindow {
+  constructor() {
+    this.buttonText = null;
+    this.buttonFunction = null;
     this.modal = null;
-    this.buttonText = buttonText;
   }
 
-  createModal() {
+  createModal = () => {
     // Создание модального окна
     this.modal = document.createElement('div');
+    
     this.modal.classList.add('modal');
 
     // Заголовок с названием игры
-    const title = document.createElement('h1');
-    title.textContent = this.gameName;
+   // const title = document.createElement('h1');
+    //title.textContent = this.gameName;
 
-    // Кнопка "Старт"
+    //this.modal.appendChild(title);
+    this.createButton();
+    return this.modal;
+  };
+
+  createButton = () => {
+    // Кнопка
     const button = document.createElement('button');
     button.type = 'button';
+    button.classList.add('modal__button');
     button.textContent = this.buttonText;
     button.addEventListener('click', () => {
       this.closeModal();
-      this.startGame();
+      this.buttonFunction();
     });
-
-    this.modal.appendChild(title);
     this.modal.appendChild(button);
+  };
 
-    return this.modal;
-  }
-
-  openModal() {
+  openModal = (gameName, buttonText, buttonFunction) => {
     if (!this.modal) {
+      this.gameName = gameName;
+      this.buttonText = buttonText;
+      this.buttonFunction = buttonFunction;
+
       this.createModal();
     }
 
     document.body.appendChild(this.modal);
-  }
+  };
 
-  closeModal() {
+  closeModal = () => {
     if (this.modal) {
       this.modal.remove();
     }
-  }
-
-  startGame() {
-    // Реализация начала игры
-    console.log('Игра началась!');
-  }
+  };
 }
-
-// Пример использования:
-const gameModal = new ModalWindow('Space Invaders');
-gameModal.openModal();

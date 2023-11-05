@@ -3,6 +3,7 @@ import { ENEMIES_MAP } from '../constants/enemies_map.js';
 import Enemy from './Enemy.js';
 import Player from './Player.js';
 import Barrier from './Barrier.js';
+import { createGameInformationPanels } from '../helpers/createGameInformationPanels.js';
 
 /**
  * Представляет игру "Space Invaders".
@@ -15,7 +16,7 @@ export default class SpaceInvadersGame {
     this.player = null;
     this.enemies = null;
     this.barriers = null;
-    //this.updateGame();
+    this.gameLevel=1
   }
 
   /**
@@ -37,11 +38,7 @@ export default class SpaceInvadersGame {
     return gameBoard;
   };
 
-  /**
-   * Создает информационные панели игры.
-   */
-  createGameInformationPanels = () => {};
-
+  
   /**
    * Создает игрока.
    * @returns {Player} - Игрок.
@@ -201,6 +198,8 @@ export default class SpaceInvadersGame {
               '<img src="/src/assets/boom.gif" alt="Boom"/>';
 
             this.player.score += enemy.pointsPerKill;
+            const scorePanel=document.querySelector('.score-panel')
+            scorePanel.innerHTML=`<p>Score: ${this.player.score}<p>`;
             setTimeout(() => {
               if (enemy.element) {
                 enemy.element.remove(); // Удаление элемента врага
@@ -274,6 +273,7 @@ export default class SpaceInvadersGame {
 
     this.cleanupBullets(); // Очистка снарядов, вышедших за пределы игрового поля
     this.animationFrameId = requestAnimationFrame(this.updateGame);
+
   };
 
   /**
@@ -319,7 +319,6 @@ export default class SpaceInvadersGame {
    * Начинает игру.
    */
   startGame = () => {
-    console.log('startGame');
     this.player = this.createPlayer();
     this.enemies = this.createEnemies(ENEMIES_MAP);
     this.barriers = this.createBarriers(
@@ -327,6 +326,8 @@ export default class SpaceInvadersGame {
       GAME_OPTIONS.barrier.width,
       GAME_OPTIONS.barrier.height
     ); // Создание барьеров
+
+    createGameInformationPanels(this.player.score,this.player.lifes,this.gameLevel,this.gameBoard);
 
     this.updateGame();
   };
