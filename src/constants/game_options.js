@@ -1,7 +1,7 @@
 //Опции игровых составляющих
 export const GAME_OPTIONS = {
   gameBoard: {
-    width: '800px',
+    width: '850px',
     height: '700px',
     backgroundColor: 'black',
   },
@@ -21,5 +21,6 @@ export const GAME_OPTIONS = {
   barrier:{
     width:70,
     height:70,
+    spacingY:20,
   }
 };

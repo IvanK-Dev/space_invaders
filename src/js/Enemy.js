@@ -34,10 +34,14 @@ export default class Enemy extends GameObject {
    */
   addElementProps = () => {
     this.element.classList.add('enemy');
+    
     if(this.enemyLevel===6){
       this.width*=2
       this.height*=2
       this.speed*=1.2
+      this.element.style.width = `${this.width}px`;
+      this.element.style.height = `${this.height}px`;
+  
     }
     this.element.innerHTML=`<svg width="${this.width}" height="${this.height}">
     <use
@@ -46,8 +50,6 @@ export default class Enemy extends GameObject {
     ></use>
   </svg>`
 
-    // this.element.style.backgroundColor =
-    //   ENEMY_PROPS[`lvl${this.enemyLevel}`].view;
   };
 
   /**

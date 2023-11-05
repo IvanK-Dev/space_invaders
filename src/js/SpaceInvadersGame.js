@@ -35,6 +35,9 @@ export default class SpaceInvadersGame {
     gameBoard.style.position = 'relative';
 
     this.parentElement.appendChild(gameBoard);
+    this.parentElement.style.width = `${
+      parseInt(gameBoard.style.width) + 200
+    }px`;
     return gameBoard;
   };
 
@@ -97,7 +100,7 @@ export default class SpaceInvadersGame {
       (this.gameBoard.offsetWidth - barrierWidth * barrierCount) /
       (barrierCount + 1); // Расстояние между барьерами
     const playerTop = this.player.y; // Определение верхней границы игрока
-    const heightAbovePlayer = barrierHeight/2; //Высота над игроком
+    const heightAbovePlayer = GAME_OPTIONS.barrier.spacingY; //Высота над игроком
 
     for (let i = 0; i < barrierCount; i++) {
       const barrier = new Barrier(
@@ -113,24 +116,45 @@ export default class SpaceInvadersGame {
     return barriers;
   };
 
+  /**
+   * Проверяет столкновение между двумя объектами.
+   *
+   * @param {GameObject} obj1 - Первый объект.
+   * @param {GameObject} obj2 - Второй объект.
+   * @returns {boolean} - Возвращает true, если есть столкновение, иначе false.
+   */
+  checkCollision = (obj1, obj2) => {
+    const obj1Coordinates = obj1.getCoordinates();
+    const obj2Coordinates = obj2.getCoordinates();
+
+    return (
+      obj1Coordinates.x + obj1Coordinates.width > obj2Coordinates.x &&
+      obj1Coordinates.x < obj2Coordinates.x + obj2Coordinates.width &&
+      obj1Coordinates.y < obj2Coordinates.y + obj2Coordinates.height &&
+      obj1Coordinates.y + obj1Coordinates.height > obj2Coordinates.y
+    );
+  };
+
+  /**
+   * Проверяет столкновение пули с барьером и обрабатывает соответствующие действия.
+   *
+   * @param {Bullet} bullet - Пуля, для которой проверяется столкновение с барьером.
+   * @returns {boolean} - Возвращает true, если пуля столкнулась с барьером и была удалена, иначе false.
+   */
   checkBulletBarrierCollision = (bullet) => {
     for (let i = 0; i < this.barriers.length; i++) {
       const barrier = this.barriers[i];
-      const bulletCoordinates = bullet.getCoordinates();
-      const barrierCoordinates = barrier.getCoordinates();
 
-      if (
-        bulletCoordinates.x + bulletCoordinates.width > barrierCoordinates.x &&
-        bulletCoordinates.x < barrierCoordinates.x + barrierCoordinates.width &&
-        bulletCoordinates.y <
-          barrierCoordinates.y + barrierCoordinates.height &&
-        bulletCoordinates.y + bulletCoordinates.height > barrierCoordinates.y
-      ) {
+      if (this.checkCollision(bullet, barrier)) {
         barrier.hpoint--;
 
         if (barrier.hpoint <= 0) {
-          barrier.removeBarrier();
-          this.barriers = this.barriers.filter((b) => b !== barrier);
+          barrier.element.innerHTML =
+            '<img src="/src/assets/boom.gif" alt="Boom"/>';
+          setTimeout(() => {
+            barrier.removeBarrier();
+            this.barriers = this.barriers.filter((b) => b !== barrier);
+          }, 700);
         }
 
         bullet.bulletRemove();
@@ -142,15 +166,21 @@ export default class SpaceInvadersGame {
     return bullet === null;
   };
 
+  /**
+   * Обрабатывает столкновение пули с барьером.
+   */
   handleBulletBarrierCollision = () => {
     if (this.player.bullet) {
-      if (this.checkBulletBarrierCollision(this.player.bullet))
+      if (this.checkBulletBarrierCollision(this.player.bullet)) {
         this.player.bullet = null;
+      }
     }
 
     this.enemies.forEach((enemy) => {
       if (enemy.bullet) {
-        if (this.checkBulletBarrierCollision(enemy.bullet)) enemy.bullet = null;
+        if (this.checkBulletBarrierCollision(enemy.bullet)) {
+          enemy.bullet = null;
+        }
       }
     });
   };
@@ -165,22 +195,24 @@ export default class SpaceInvadersGame {
         const bulletCoordinates = this.player.bullet.getCoordinates();
         const enemyCoordinates = enemy.getCoordinates();
 
-        if (
-          bulletCoordinates.x + bulletCoordinates.width > enemyCoordinates.x &&
-          bulletCoordinates.x < enemyCoordinates.x + enemyCoordinates.width &&
-          bulletCoordinates.y < enemyCoordinates.y + enemyCoordinates.height &&
-          bulletCoordinates.y + bulletCoordinates.height > enemyCoordinates.y
-        ) {
+        if (this.checkCollision(this.player.bullet, enemy)) {
           enemy.hpoint--;
 
           if (enemy.hpoint <= 0) {
             //console.log("coordinates",bulletCoordinates,bulletCoordinates1 )
 
+            enemy.element.innerHTML =
+              '<img src="/src/assets/boom.gif" alt="Boom"/>';
+
             this.player.score += enemy.pointsPerKill;
-            enemy.element.remove(); // Удаление элемента врага
-            enemy.stopShooting();
-            enemy.removeEnemy();
-            this.enemies.splice(i, 1); // Удаление врага из массива
+            setTimeout(() => {
+              if (enemy.element) {
+                enemy.element.remove(); // Удаление элемента врага
+                enemy.stopShooting();
+                enemy.removeEnemy();
+              }
+              this.enemies.splice(i, 1); // Удаление врага из массива
+            }, 700);
           }
 
           this.player.bullet.bulletRemove(); // Удаление пули игрока
@@ -199,20 +231,8 @@ export default class SpaceInvadersGame {
       const enemy = this.enemies[i];
       // console.log('enemy.bullet', enemy.bullet);
       if (enemy.bullet) {
-        ///const bulletCoordinates = enemy.bullet.getBulletCoordinates();
-        const bulletCoordinates = enemy.bullet.getCoordinates();
-        const playerCoordinates = this.player.getCoordinates();
-
         //Сравнение координат патрона врага с игроком
-        if (
-          bulletCoordinates.x > playerCoordinates.x &&
-          bulletCoordinates.x + bulletCoordinates.width <
-            playerCoordinates.x + playerCoordinates.width &&
-          bulletCoordinates.y + bulletCoordinates.height >
-            playerCoordinates.y &&
-          bulletCoordinates.y + bulletCoordinates.height <
-            playerCoordinates.y + playerCoordinates.height
-        ) {
+        if (this.checkCollision(enemy.bullet, this.player)) {
           this.player.lifes--;
           console.log('this.player.lifes', this.player.lifes);
           enemy.bullet.bulletRemove(); // Удаление патрона врага

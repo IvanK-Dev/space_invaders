@@ -29,14 +29,14 @@ export default class Barrier extends GameObject {
    * Добавляет свойства барьера.
    */
   addBarrierProps = () => {
-    this.y -= 2 * this.heightAbovePlayer;
-    this.createElement()
-    this.element.innerHTML=`<svg width="${this.width}" height="${this.height}" >
+    this.y -= this.height + this.heightAbovePlayer;
+    this.createElement();
+    this.element.innerHTML = `<svg width="${this.width}" height="${this.height}" >
     <use
       class="player__icon"
       href="../src/assets/sprite.svg#barrier"
     ></use>
-  </svg>`
+  </svg>`;
     this.element.classList.add('barrier');
   };
 
@@ -44,6 +44,7 @@ export default class Barrier extends GameObject {
    * Удаляет барьер из DOM.
    */
   removeBarrier = () => {
+    if (this.element === null) return;
     this.element.remove();
     this.element = null;
   };
