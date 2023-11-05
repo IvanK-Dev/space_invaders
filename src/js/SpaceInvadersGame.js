@@ -12,14 +12,10 @@ export default class SpaceInvadersGame {
     this.parentElement = document.getElementById('game');
 
     this.gameBoard = this.createGameBoard();
-    this.player = this.createPlayer();
-    this.enemies = this.createEnemies(ENEMIES_MAP);
-    this.barriers = this.createBarriers(
-      4,
-      GAME_OPTIONS.barrier.width,
-      GAME_OPTIONS.barrier.height
-    ); // Создание барьеров
-    this.updateGame();
+    this.player = null;
+    this.enemies = null;
+    this.barriers = null;
+    //this.updateGame();
   }
 
   /**
@@ -31,7 +27,7 @@ export default class SpaceInvadersGame {
     gameBoard.classList.add('game-board');
     gameBoard.style.width = GAME_OPTIONS.gameBoard.width;
     gameBoard.style.height = GAME_OPTIONS.gameBoard.height;
-    gameBoard.style.backgroundColor = GAME_OPTIONS.gameBoard.backgroundColor;
+    gameBoard.style.backgroundImage = `url(${GAME_OPTIONS.gameBoard.backgroundImage})`;
     gameBoard.style.position = 'relative';
 
     this.parentElement.appendChild(gameBoard);
@@ -317,5 +313,21 @@ export default class SpaceInvadersGame {
         enemy.bullet = null;
       }
     }
+  };
+
+  /**
+   * Начинает игру.
+   */
+  startGame = () => {
+    console.log('startGame');
+    this.player = this.createPlayer();
+    this.enemies = this.createEnemies(ENEMIES_MAP);
+    this.barriers = this.createBarriers(
+      4,
+      GAME_OPTIONS.barrier.width,
+      GAME_OPTIONS.barrier.height
+    ); // Создание барьеров
+
+    this.updateGame();
   };
 }

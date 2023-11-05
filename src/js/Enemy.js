@@ -34,7 +34,7 @@ export default class Enemy extends GameObject {
    */
   addElementProps = () => {
     this.element.classList.add('enemy');
-    
+
     if(this.enemyLevel===6){
       this.width*=2
       this.height*=2
@@ -107,4 +107,5 @@ export default class Enemy extends GameObject {
       }
     }
   };
+
 }

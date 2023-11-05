@@ -4,6 +4,7 @@ export const GAME_OPTIONS = {
     width: '850px',
     height: '700px',
     backgroundColor: 'black',
+    backgroundImage:'/src/assets/uniwers.gif'
   },
   player: {
     width: 50,
