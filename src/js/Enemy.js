@@ -6,12 +6,11 @@ import GameObject from './GameObject.js';
  * Представляет экземпляр врага.
  */
 export default class Enemy extends GameObject {
-  constructor(x, y, width, height, container, enemyLevel) {
+  constructor(x, y, width, height, container, enemyLevel, gameLevel) {
     super(x, y, width, height, container);
 
-    this.speed = 1;
+    this.speed = gameLevel;
     this.enemyLevel = enemyLevel;
-
 
     this.shotSpeed = ENEMY_PROPS[`lvl${this.enemyLevel}`].shootSpeed;
     this.hpoint = ENEMY_PROPS[`lvl${this.enemyLevel}`].hpoint;
@@ -35,21 +34,19 @@ export default class Enemy extends GameObject {
   addElementProps = () => {
     this.element.classList.add('enemy');
 
-    if(this.enemyLevel===6){
-      this.width*=2
-      this.height*=2
-      this.speed*=1.2
+    if (this.enemyLevel === 6) {
+      this.width *= 2;
+      this.height *= 2;
+      this.speed *= 1.2 * this.speed;
       this.element.style.width = `${this.width}px`;
       this.element.style.height = `${this.height}px`;
-  
     }
-    this.element.innerHTML=`<svg width="${this.width}" height="${this.height}">
+    this.element.innerHTML = `<svg width="${this.width}" height="${this.height}">
     <use
       class="enemy__icon"
       href="../src/assets/sprite.svg#enemyLvl${this.enemyLevel}"
     ></use>
-  </svg>`
-
+  </svg>`;
   };
 
   /**
@@ -107,5 +104,4 @@ export default class Enemy extends GameObject {
       }
     }
   };
-
 }

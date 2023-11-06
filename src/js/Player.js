@@ -1,3 +1,4 @@
+import { GAME_OPTIONS } from '../constants/game_options.js';
 import { shoot } from '../helpers/shoot.js';
 import GameObject from './GameObject.js';
 
@@ -44,7 +45,7 @@ export default class Player extends GameObject {
     this.element.innerHTML=`<svg width="${this.width}" height="${this.height}" >
     <use
       class="player__icon"
-      href="../src/assets/sprite.svg#player1"
+      href="${GAME_OPTIONS.player.imageHref}"
     ></use>
   </svg>`
     this.element.style.left = `${this.x}px`;

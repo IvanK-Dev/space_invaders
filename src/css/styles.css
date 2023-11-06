@@ -1,6 +1,12 @@
 body {
   background-color: #282828;
 }
+p,
+ul,
+li {
+  margin: 0;
+  padding: 0;
+}
 
 .game-board {
   position: relative;
@@ -32,6 +38,7 @@ svg {
   align-items: center;
   width: 400px;
   height: 360px;
+  border-radius: 20px;
   position: fixed;
   top: 50%;
   left: 50%;
@@ -63,7 +70,40 @@ svg {
   box-shadow: 0 0 20px rgba(255, 223, 0, 0.7);
 }
 
-.score-panel{
+.score-panel {
+  font-size: 35px;
+  position: absolute;
+  top: -80px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  text-align: center;
   color: whitesmoke;
-  font-size: 20px;
+}
+.score-panel > p {
+  margin: 0;
+}
+
+.lifes-panel {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  position: absolute;
+  top: 100%;
+
+  font-size: 35px;
+  color: whitesmoke;
+}
+
+.lifes-panel > ul {
+  list-style-type: none;
+}
+.level-panel {
+  position: absolute;
+  top: 100%;
+  right: 0%;
+
+  font-size: 35px;
+  color: whitesmoke;
 }

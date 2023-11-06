@@ -4,6 +4,8 @@ import Enemy from './Enemy.js';
 import Player from './Player.js';
 import Barrier from './Barrier.js';
 import { createGameInformationPanels } from '../helpers/createGameInformationPanels.js';
+import { formattedScore } from '../helpers/formattedScore.js';
+import { setLifesHTML } from '../helpers/setLifesHTML.js';
 
 /**
  * Представляет игру "Space Invaders".
@@ -16,7 +18,8 @@ export default class SpaceInvadersGame {
     this.player = null;
     this.enemies = null;
     this.barriers = null;
-    this.gameLevel=1
+    this.gameLevel = 1;
+    this.gameOver = false;
   }
 
   /**
@@ -38,7 +41,6 @@ export default class SpaceInvadersGame {
     return gameBoard;
   };
 
-  
   /**
    * Создает игрока.
    * @returns {Player} - Игрок.
@@ -72,7 +74,8 @@ export default class SpaceInvadersGame {
             enemyWidth,
             enemyHeight,
             this.gameBoard,
-            enemyLevel
+            enemyLevel,
+            this.gameLevel
           );
           enemies.push(enemy); // Добавление врага в массив
         }
@@ -198,8 +201,10 @@ export default class SpaceInvadersGame {
               '<img src="/src/assets/boom.gif" alt="Boom"/>';
 
             this.player.score += enemy.pointsPerKill;
-            const scorePanel=document.querySelector('.score-panel')
-            scorePanel.innerHTML=`<p>Score: ${this.player.score}<p>`;
+            const updateScore = document.querySelector(
+              '.score-panel>.score-text'
+            );
+            updateScore.innerHTML = formattedScore(this.player.score);
             setTimeout(() => {
               if (enemy.element) {
                 enemy.element.remove(); // Удаление элемента врага
@@ -229,7 +234,8 @@ export default class SpaceInvadersGame {
         //Сравнение координат патрона врага с игроком
         if (this.checkCollision(enemy.bullet, this.player)) {
           this.player.lifes--;
-          console.log('this.player.lifes', this.player.lifes);
+          document.querySelector('.lifes-panel>.lifes-list').innerHTML =
+            setLifesHTML(this.player.lifes);
           enemy.bullet.bulletRemove(); // Удаление патрона врага
           enemy.bullet = null; // Обнуление ссылки на патрон врага
           break; // Прекращаем обработку столкновений после удаления врага
@@ -259,8 +265,12 @@ export default class SpaceInvadersGame {
   updateGame = () => {
     // Проверяем условия завершения игры - отсутствие жизней у игрока или столкновение с врагами.
     if (this.player.lifes <= 0 || this.handleCollisionWithPlayerArea()) {
-      this.gameOver(); // Игра завершена
+      this.handleGameOver(); // Игра завершена
       return;
+    }
+
+    if (this.enemies.length <= 0) {
+      this.gameLevel++;
     }
 
     this.handleCollisions(); // Обработка столкновений объектов в игре
@@ -273,19 +283,20 @@ export default class SpaceInvadersGame {
 
     this.cleanupBullets(); // Очистка снарядов, вышедших за пределы игрового поля
     this.animationFrameId = requestAnimationFrame(this.updateGame);
-
   };
 
   /**
    * Обработка завершения игры.
    */
-  gameOver = () => {
+  handleGameOver = () => {
     this.player.speed = 0; // Остановка движения игрока
     this.enemies.forEach((enemy) => {
       enemy.stopShooting(); // Остановка атаки врагов
       enemy.speed = 0; // Остановка движения врагов по горизонтали
     });
+
     cancelAnimationFrame(this.animationFrameId); // Остановка игровой анимации
+    this.gameOver = true;
     console.log('Game Over');
     return;
   };
@@ -319,7 +330,9 @@ export default class SpaceInvadersGame {
    * Начинает игру.
    */
   startGame = () => {
-    this.player = this.createPlayer();
+    if (this.player === null) {
+      this.player = this.createPlayer();
+    }
     this.enemies = this.createEnemies(ENEMIES_MAP);
     this.barriers = this.createBarriers(
       4,
@@ -327,7 +340,11 @@ export default class SpaceInvadersGame {
       GAME_OPTIONS.barrier.height
     ); // Создание барьеров
 
-    createGameInformationPanels(this.player.score,this.player.lifes,this.gameLevel,this.gameBoard);
+    createGameInformationPanels(
+      this.player.lifes,
+      this.gameLevel,
+      this.gameBoard
+    );
 
     this.updateGame();
   };
