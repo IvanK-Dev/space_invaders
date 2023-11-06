@@ -17,7 +17,6 @@ export default class Enemy extends GameObject {
     this.pointsPerKill = ENEMY_PROPS[`lvl${this.enemyLevel}`].points;
     this.bullet = null;
 
-    // this.enemyElement = this.createEnemyElement();
     this.addElementProps();
 
     this.moveEnemy = this.moveEnemy.bind(this);
@@ -41,12 +40,13 @@ export default class Enemy extends GameObject {
       this.element.style.width = `${this.width}px`;
       this.element.style.height = `${this.height}px`;
     }
-    this.element.innerHTML = `<svg width="${this.width}" height="${this.height}">
-    <use
+    this.element.innerHTML = `
+    <svg width="${this.width}" height="${this.height}">
+      <use 
       class="enemy__icon"
-      href="../src/assets/sprite.svg#enemyLvl${this.enemyLevel}"
-    ></use>
-  </svg>`;
+      href="../src/assets/sprite.svg#enemyLvl${this.enemyLevel}">
+      </use>
+    </svg>`;
   };
 
   /**
@@ -64,7 +64,7 @@ export default class Enemy extends GameObject {
     }
 
     this.updatePosition();
-    requestAnimationFrame(this.moveEnemy);
+    this.animationFrameId = requestAnimationFrame(this.moveEnemy);
   };
 
   /**
@@ -98,7 +98,9 @@ export default class Enemy extends GameObject {
    * Удаляет экземпляр врага, обнуляя его свойства.
    */
   removeEnemy = () => {
-    this.removeElemnt()
+    this.stopShooting();
+    this.removeElemnt();
+    cancelAnimationFrame(this.animationFrameId);
     for (const key in this) {
       if (Object.hasOwnProperty.call(this, key)) {
         this[key] = null;

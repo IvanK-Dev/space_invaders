@@ -7,6 +7,7 @@ import { createGameInformationPanels } from '../helpers/createGameInformationPan
 import { formattedScore } from '../helpers/formattedScore.js';
 import { setLifesHTML } from '../helpers/setLifesHTML.js';
 import { explosionObj } from '../helpers/explosionObj.js';
+import { Gift } from './Gift.js';
 
 /**
  * Представляет игру "Space Invaders".
@@ -20,6 +21,7 @@ export default class SpaceInvadersGame {
     this.enemies = null;
     this.barriers = null;
     this.gameLevel = 1;
+    this.gifts = [];
     this.gameOverFlag = false;
     this.nextLevelFlag = false;
   }
@@ -197,29 +199,32 @@ export default class SpaceInvadersGame {
           enemy.hpoint--;
 
           if (enemy.hpoint <= 0) {
-            //console.log("coordinates",bulletCoordinates,bulletCoordinates1 )
+            const { x, y, width, height } = enemy;
+            explosionObj(x, y, width, height, this.gameBoard);
 
-            // enemy.element.innerHTML =
-            //   '<img src="/src/assets/boom.gif" alt="Boom"/>';
-            const { x, y, width, height } = enemy.getCoordinates;
-            const explosion = explosionObj(x, y, width, height, this.gameBoard);
+            this.gifts.push(
+              new Gift(
+                x,
+                y,
+                GAME_OPTIONS.gift.width,
+                GAME_OPTIONS.gift.height,
+                this.gameBoard,
+                'life'
+              )
+            );
 
             this.player.score += enemy.pointsPerKill;
+
             const updateScore = document.querySelector(
               '.score-panel>.score-text'
             );
             updateScore.innerHTML = formattedScore(this.player.score);
-            //setTimeout(() => {
+
             if (enemy.element) {
-              //enemy.element.remove(); // Удаление элемента врага
-              enemy.stopShooting();
               enemy.removeEnemy();
             }
+
             this.enemies.splice(i, 1); // Удаление врага из массива
-            setTimeout(() => {
-              explosion.removeElemnt();
-            }, 700);
-            //}, 700);
           }
 
           this.player.bullet.bulletRemove(); // Удаление пули игрока
@@ -242,10 +247,28 @@ export default class SpaceInvadersGame {
         if (this.checkCollision(enemy.bullet, this.player)) {
           this.player.lifes--;
           document.querySelector('.lifes-panel>.lifes-list').innerHTML =
-            setLifesHTML(this.player.lifes);
+            setLifesHTML(this.player.getLifes());
           enemy.bullet.bulletRemove(); // Удаление патрона врага
           enemy.bullet = null; // Обнуление ссылки на патрон врага
           break; // Прекращаем обработку столкновений после удаления врага
+        }
+      }
+    }
+  };
+
+  handleGiftPlayerCollision = () => {
+    for (let i = 0; i < this.gifts.length; i++) {
+      const gift = this.gifts[i];
+      if (gift) {
+        //Сравнение координат подарка с игроком
+        if (this.checkCollision(gift, this.player)) {
+          if (gift.giftContent === 'life') this.player.setLifes();
+
+          document.querySelector('.lifes-panel>.lifes-list').innerHTML =
+            setLifesHTML(this.player.getLifes());
+          this.gifts.splice(i, 1);
+          gift.removeGift(); // Удаление подарка
+          break; // Прекращаем обработку
         }
       }
     }
@@ -326,6 +349,7 @@ export default class SpaceInvadersGame {
     this.handleBulletEnemyCollision(); // Обработка столкновения снаряда игрока с врагами
     this.handleBulletPlayerCollision(); // Обработка столкновения снаряда врагов с игроком
     this.handleBulletBarrierCollision();
+    this.handleGiftPlayerCollision();
   };
 
   /**

@@ -30,4 +30,8 @@ export const GAME_OPTIONS = {
     height: 40,
     imageHref: '/src/assets/sprite.svg#player1',
   },
+  gift:{
+    width: 30,
+    height: 30,
+  },
 };

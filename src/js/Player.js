@@ -42,12 +42,12 @@ export default class Player extends GameObject {
    */
   addElementProps = () => {
     this.element.id = 'player';
-    this.element.innerHTML=`<svg width="${this.width}" height="${this.height}" >
+    this.element.innerHTML = `<svg width="${this.width}" height="${this.height}" >
     <use
       class="player__icon"
       href="${GAME_OPTIONS.player.imageHref}"
     ></use>
-  </svg>`
+  </svg>`;
     this.element.style.left = `${this.x}px`;
     this.element.style.top = `${this.y}px`;
 
@@ -57,6 +57,12 @@ export default class Player extends GameObject {
     this.maxLeftPosition = 0;
     this.maxRightPosition = this.container.offsetWidth - this.width;
   };
+
+  setLifes = () => {
+    if (this.lifes < 4) this.lifes++;
+  };
+
+  getLifes = () => this.lifes;
 
   /**
    * Двигает игрока влево.
