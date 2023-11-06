@@ -24,6 +24,7 @@ export const GAME_OPTIONS = {
     width: 70,
     height: 70,
     spacingY: 20,
+    imageHref:'/src/assets/sprite.svg#barrier'
   },
   lifes: {
     width: 40,
@@ -33,5 +34,6 @@ export const GAME_OPTIONS = {
   gift:{
     width: 30,
     height: 30,
+
   },
 };

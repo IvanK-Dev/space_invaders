@@ -1,13 +1,13 @@
-import { GAME_OPTIONS } from '../constants/game_options.js';
-import { ENEMIES_MAP } from '../constants/enemies_map.js';
 import Enemy from './Enemy.js';
 import Player from './Player.js';
 import Barrier from './Barrier.js';
+import  Gift  from './Gift.js';
+import { GAME_OPTIONS } from '../constants/game_options.js';
+import { ENEMIES_MAP } from '../constants/enemies_map.js';
 import { createGameInformationPanels } from '../helpers/createGameInformationPanels.js';
 import { formattedScore } from '../helpers/formattedScore.js';
 import { setLifesHTML } from '../helpers/setLifesHTML.js';
 import { explosionObj } from '../helpers/explosionObj.js';
-import { Gift } from './Gift.js';
 
 /**
  * Представляет игру "Space Invaders".
@@ -202,17 +202,18 @@ export default class SpaceInvadersGame {
             const { x, y, width, height } = enemy;
             explosionObj(x, y, width, height, this.gameBoard);
 
-            this.gifts.push(
-              new Gift(
-                x,
-                y,
-                GAME_OPTIONS.gift.width,
-                GAME_OPTIONS.gift.height,
-                this.gameBoard,
-                'life'
-              )
-            );
-
+            if (Math.random() < 0.8) {//подарок выпадет в 20% случаев
+              this.gifts.push(
+                new Gift(
+                  x,
+                  y,
+                  GAME_OPTIONS.gift.width,
+                  GAME_OPTIONS.gift.height,
+                  this.gameBoard,
+                  'life'
+                )
+              );
+            }
             this.player.score += enemy.pointsPerKill;
 
             const updateScore = document.querySelector(

@@ -3,7 +3,7 @@ import GameObject from './GameObject.js';
 /**
  * Представляет подарок, который падает из врага при его уничтожении.
  */
-export class Gift extends GameObject {
+export default class Gift extends GameObject {
   /**
    * Создает экземпляр подарка.
    * @constructor

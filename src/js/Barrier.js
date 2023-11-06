@@ -1,4 +1,5 @@
 import { BARRIER_PROPS } from '../constants/barrier_props.js';
+import { GAME_OPTIONS } from '../constants/game_options.js';
 import GameObject from './GameObject.js';
 
 /**
@@ -34,7 +35,7 @@ export default class Barrier extends GameObject {
     this.element.innerHTML = `<svg width="${this.width}" height="${this.height}" >
     <use
       class="player__icon"
-      href="../src/assets/sprite.svg#barrier"
+      href="${GAME_OPTIONS.barrier.imageHref}"
     ></use>
   </svg>`;
     this.element.classList.add('barrier');
