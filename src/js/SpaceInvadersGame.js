@@ -6,6 +6,7 @@ import Barrier from './Barrier.js';
 import { createGameInformationPanels } from '../helpers/createGameInformationPanels.js';
 import { formattedScore } from '../helpers/formattedScore.js';
 import { setLifesHTML } from '../helpers/setLifesHTML.js';
+import { explosionObj } from '../helpers/explosionObj.js';
 
 /**
  * Представляет игру "Space Invaders".
@@ -19,7 +20,8 @@ export default class SpaceInvadersGame {
     this.enemies = null;
     this.barriers = null;
     this.gameLevel = 1;
-    this.gameOver = false;
+    this.gameOverFlag = false;
+    this.nextLevelFlag = false;
   }
 
   /**
@@ -197,22 +199,27 @@ export default class SpaceInvadersGame {
           if (enemy.hpoint <= 0) {
             //console.log("coordinates",bulletCoordinates,bulletCoordinates1 )
 
-            enemy.element.innerHTML =
-              '<img src="/src/assets/boom.gif" alt="Boom"/>';
+            // enemy.element.innerHTML =
+            //   '<img src="/src/assets/boom.gif" alt="Boom"/>';
+            const { x, y, width, height } = enemy.getCoordinates;
+            const explosion = explosionObj(x, y, width, height, this.gameBoard);
 
             this.player.score += enemy.pointsPerKill;
             const updateScore = document.querySelector(
               '.score-panel>.score-text'
             );
             updateScore.innerHTML = formattedScore(this.player.score);
+            //setTimeout(() => {
+            if (enemy.element) {
+              //enemy.element.remove(); // Удаление элемента врага
+              enemy.stopShooting();
+              enemy.removeEnemy();
+            }
+            this.enemies.splice(i, 1); // Удаление врага из массива
             setTimeout(() => {
-              if (enemy.element) {
-                enemy.element.remove(); // Удаление элемента врага
-                enemy.stopShooting();
-                enemy.removeEnemy();
-              }
-              this.enemies.splice(i, 1); // Удаление врага из массива
+              explosion.removeElemnt();
             }, 700);
+            //}, 700);
           }
 
           this.player.bullet.bulletRemove(); // Удаление пули игрока
@@ -260,6 +267,31 @@ export default class SpaceInvadersGame {
   };
 
   /**
+   * Обработка завершения игры.
+   */
+  handleGameOver = () => {
+    this.player.speed = 0; // Остановка движения игрока
+    this.enemies.forEach((enemy) => {
+      enemy.stopShooting(); // Остановка атаки врагов
+      enemy.speed = 0; // Остановка движения врагов по горизонтали
+    });
+
+    cancelAnimationFrame(this.animationFrameId); // Остановка игровой анимации
+    this.gameOverFlag = true;
+    return;
+  };
+
+  /**
+   * Обработка перехода на следующий уровень.
+   */
+  handleNextGameLevel = () => {
+    this.gameLevel++;
+    cancelAnimationFrame(this.animationFrameId); // Остановка игровой анимации
+    this.nextLevelFlag = true;
+    return;
+  };
+
+  /**
    * Обновляет состояние игры.
    */
   updateGame = () => {
@@ -269,8 +301,10 @@ export default class SpaceInvadersGame {
       return;
     }
 
+    // Проверяем условия завершения игры - отсутствие врагов.
     if (this.enemies.length <= 0) {
-      this.gameLevel++;
+      this.handleNextGameLevel();
+      return;
     }
 
     this.handleCollisions(); // Обработка столкновений объектов в игре
@@ -283,22 +317,6 @@ export default class SpaceInvadersGame {
 
     this.cleanupBullets(); // Очистка снарядов, вышедших за пределы игрового поля
     this.animationFrameId = requestAnimationFrame(this.updateGame);
-  };
-
-  /**
-   * Обработка завершения игры.
-   */
-  handleGameOver = () => {
-    this.player.speed = 0; // Остановка движения игрока
-    this.enemies.forEach((enemy) => {
-      enemy.stopShooting(); // Остановка атаки врагов
-      enemy.speed = 0; // Остановка движения врагов по горизонтали
-    });
-
-    cancelAnimationFrame(this.animationFrameId); // Остановка игровой анимации
-    this.gameOver = true;
-    console.log('Game Over');
-    return;
   };
 
   /**
@@ -330,6 +348,24 @@ export default class SpaceInvadersGame {
    * Начинает игру.
    */
   startGame = () => {
+    if (this.gameOverFlag) {
+      this.player.removeElemnt();
+      this.player = null;
+
+      this.enemies.forEach((enemy) => {
+        enemy.removeEnemy();
+      });
+
+      this.enemies = null;
+
+      this.barriers.forEach((barrier) => {
+        barrier.removeBarrier();
+      });
+
+      this.gameOverFlag = false;
+    }
+    this.nextLevelFlag = false;
+
     if (this.player === null) {
       this.player = this.createPlayer();
     }
@@ -339,12 +375,13 @@ export default class SpaceInvadersGame {
       GAME_OPTIONS.barrier.width,
       GAME_OPTIONS.barrier.height
     ); // Создание барьеров
-
-    createGameInformationPanels(
-      this.player.lifes,
-      this.gameLevel,
-      this.gameBoard
-    );
+    if (this.gameLevel == 1) {
+      createGameInformationPanels(
+        this.player.lifes,
+        this.gameLevel,
+        this.gameBoard
+      );
+    }
 
     this.updateGame();
   };

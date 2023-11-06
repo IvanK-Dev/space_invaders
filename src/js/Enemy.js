@@ -98,6 +98,7 @@ export default class Enemy extends GameObject {
    * Удаляет экземпляр врага, обнуляя его свойства.
    */
   removeEnemy = () => {
+    this.removeElemnt()
     for (const key in this) {
       if (Object.hasOwnProperty.call(this, key)) {
         this[key] = null;

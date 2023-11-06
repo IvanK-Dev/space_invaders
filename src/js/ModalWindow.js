@@ -5,17 +5,12 @@ export default class ModalWindow {
     this.modal = null;
   }
 
-  createModal = () => {
+  createModalElement = () => {
     // Создание модального окна
     this.modal = document.createElement('div');
     
     this.modal.classList.add('modal');
 
-    // Заголовок с названием игры
-   // const title = document.createElement('h1');
-    //title.textContent = this.gameName;
-
-    //this.modal.appendChild(title);
     this.createButton();
     return this.modal;
   };
@@ -33,14 +28,13 @@ export default class ModalWindow {
     this.modal.appendChild(button);
   };
 
-  openModal = (gameName, buttonText, buttonFunction) => {
-    if (!this.modal) {
-      this.gameName = gameName;
+  openModal = ( buttonText, buttonFunction) => {
+   // if (!this.modal) {
       this.buttonText = buttonText;
       this.buttonFunction = buttonFunction;
 
-      this.createModal();
-    }
+      this.createModalElement();
+   // }
 
     document.body.appendChild(this.modal);
   };
