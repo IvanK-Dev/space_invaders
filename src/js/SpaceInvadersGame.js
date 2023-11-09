@@ -202,7 +202,7 @@ export default class SpaceInvadersGame {
             const { x, y, width, height } = enemy;
             explosionObj(x, y, width, height, this.gameBoard);
 
-            if (Math.random() < 0.8) {//подарок выпадет в 20% случаев
+            if (Math.random() > 0.8) {//подарок выпадет в 20% случаев
               this.gifts.push(
                 new Gift(
                   x,
